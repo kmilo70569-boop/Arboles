@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fff8ea">
+<title>Misión Árbol · Aprende jugando</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1d2557;--ink-soft:#505a88;--paper:#fff8ea;--card:#ffffff;--line:#eadfc7;--shadow:#e3d5b5;
+  --sea:#17b4c8;--sea-deep:#0b7f9b;--sand-deep:#e9bd62;
+  --leaf:#2fbf71;--leaf-deep:#1f8a51;--coral:#ff6b6b;--coral-deep:#d64545;
+  --sun:#ffc23d;--sun-deep:#cf8f00;--sky:#4f8cff;--sky-deep:#2c5fd0;
+  --vp-bg:#e2f8eb;--fn-bg:#fff2cc;--fp-bg:#ffe5e5;--vn-bg:#e4edff;
+  --scene-top:#bdf1ff;--scene-bottom:#9be38f;--title2:#0b7f9b;
+  --display:"Baloo 2","Trebuchet MS","Arial Rounded MT Bold",system-ui,sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+  color-scheme:light;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ink:#f4f2ff;--ink-soft:#bcc2e6;--paper:#131938;--card:#1d2550;--line:#323d78;--shadow:#0b1030;--sand-deep:#6b5a33;
+  --vp-bg:#173f2e;--fn-bg:#3f3317;--fp-bg:#47222b;--vn-bg:#1d2d58;--scene-top:#2b4a8a;--scene-bottom:#2c6a4a;--title2:#17b4c8;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --ink:#f4f2ff;--ink-soft:#bcc2e6;--paper:#131938;--card:#1d2550;--line:#323d78;--shadow:#0b1030;--sand-deep:#6b5a33;
+  --vp-bg:#173f2e;--fn-bg:#3f3317;--fp-bg:#47222b;--vn-bg:#1d2d58;--scene-top:#2b4a8a;--scene-bottom:#2c6a4a;--title2:#17b4c8;color-scheme:dark}
+
+/* La app ocupa exactamente la pantalla: sin scroll de página */
+html,body{height:100%}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;overflow:hidden;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;-webkit-font-smoothing:antialiased;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+button:focus-visible{outline:4px solid var(--sky);outline-offset:3px}
+[hidden]{display:none!important}
+h1,h2,h3{font-family:var(--display);line-height:1.05;margin:0}
+
+.shell{height:100%;width:min(1120px,100% - 20px);margin:0 auto;padding:10px 0;display:flex;flex-direction:column;gap:10px}
+main{flex:1;min-height:0;display:flex}
+
+/* Barra superior */
+.topbar{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 8px 6px 12px;background:var(--card);border:3px solid var(--line);border-radius:20px;box-shadow:0 4px 0 var(--shadow)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand img{width:96px;height:auto;display:block;border-radius:8px}
+.brand-name{font-family:var(--display);font-weight:800;font-size:20px;line-height:1;white-space:nowrap}
+.top-actions{display:flex;gap:8px;align-items:center}
+.star-chip{display:flex;align-items:center;gap:6px;font-family:var(--display);font-weight:800;font-size:19px;background:var(--fn-bg);border:3px solid var(--sun);border-radius:999px;padding:2px 13px 0}
+.icon-btn{width:42px;height:42px;border-radius:13px;border:3px solid var(--line);background:var(--card);font-size:19px;display:grid;place-items:center;box-shadow:0 3px 0 var(--shadow);padding:0}
+
+/* Botones */
+.btn{font-family:var(--display);font-weight:800;font-size:20px;line-height:1.1;border:0;border-radius:18px;padding:14px 22px 11px;transition:transform .12s,box-shadow .12s}
+.btn:active{transform:translateY(4px)}
+.btn-go{background:var(--coral);color:#fff;box-shadow:0 6px 0 var(--coral-deep)}
+.btn-go:active{box-shadow:0 2px 0 var(--coral-deep)}
+.btn-soft{background:var(--card);color:var(--ink);border:3px solid var(--line);box-shadow:0 6px 0 var(--shadow)}
+.btn-soft:active{box-shadow:0 2px 0 var(--shadow)}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px}
+
+/* Pantallas: cada una llena el espacio disponible */
+.screen{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;background:var(--card);border:3px solid var(--line);border-radius:28px;box-shadow:0 7px 0 var(--shadow);padding:clamp(14px,2.6vw,28px);overflow-x:hidden;overflow-y:auto;scrollbar-width:thin}
+.screen.enter{animation:enter .35s cubic-bezier(.2,1.2,.4,1)}
+
+/* ---------- Inicio ---------- */
+.home{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(16px,3vw,34px);align-items:center}
+.home-text{min-width:0}
+.home h1{font-size:clamp(46px,7.5vw,84px);letter-spacing:-1px}
+.home h1 span{display:block}
+.home h1 span+span{color:var(--title2)}
+.lead{font-size:clamp(16px,2vw,19px);color:var(--ink-soft);max-width:54ch;margin:10px 0 18px}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:0;list-style:none}
+.facts li{background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:5px 13px;font-weight:800;font-size:14px}
+.made{margin:14px 0 0;font-size:13px;color:var(--ink-soft)}
+.home-art{position:relative;height:100%;max-height:520px;min-height:150px;border-radius:24px;overflow:hidden;background:linear-gradient(var(--scene-top) 0 44%,var(--sea) 44%,var(--sea-deep));border:4px solid #fff;container-type:size}
+.home-art > svg{position:absolute;inset:0;width:100%;height:100%}
+.home-sol{position:absolute;right:4cqw;top:4cqh;height:min(38cqh,30cqw);aspect-ratio:1;animation:float 2.6s ease-in-out infinite}
+.home-sol svg{display:block;width:100%;height:100%}
+.home-say{position:absolute;right:calc(6cqw + min(38cqh,30cqw));top:9cqh;background:#fff;color:#1d2557;font-family:var(--display);font-weight:800;font-size:clamp(14px,min(5cqw,8cqh),20px);padding:7px 14px 4px;border-radius:16px;box-shadow:0 4px 0 rgba(29,37,87,.15);white-space:nowrap}
+.home-say::after{content:"";position:absolute;right:-10px;top:50%;margin-top:-9px;border:9px solid transparent;border-left-color:#fff;border-right:0}
+
+/* ---------- Matriz ---------- */
+.board{display:grid;grid-template-columns:minmax(66px,auto) 1fr 1fr;grid-template-rows:auto 1fr 1fr;gap:10px 12px;padding:6px 6px 0 0;height:100%;min-height:0}
+.head{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;font-size:13px;font-weight:800;color:var(--ink-soft);line-height:1.15;padding:6px 5px;border-radius:15px;background:var(--paper);border:2px dashed var(--line);transition:background .2s,border-color .2s}
+.head b{display:block;font-family:var(--display);font-size:17px;color:var(--ink);margin-top:1px}
+.head .ico{width:26px;height:26px;margin-bottom:2px}
+.head .ico svg{width:100%;height:100%;display:block}
+.head.glow{background:var(--fn-bg);border:2px solid var(--sun);animation:pulse 1s ease-in-out 3}
+.cell{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;text-align:left;border-radius:18px;padding:10px 12px;border:4px solid;min-height:0;overflow:visible;transition:transform .15s,box-shadow .15s,opacity .2s}
+.cell .c-ico{font-size:26px;line-height:1}
+.cell .c-name{font-family:var(--display);font-weight:800;font-size:clamp(17px,2vw,22px);line-height:1.02;margin-top:3px}
+.cell .c-tech{font-size:12px;font-weight:800;opacity:.8}
+.cell .c-desc{font-size:14px;margin-top:5px;color:var(--ink);line-height:1.3}
+.cell .c-count{position:absolute;top:-9px;right:-9px;min-width:34px;height:34px;border-radius:999px;border:3px solid currentColor;z-index:2;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:21px;background:#fff;color:#1d2557;padding:2px 6px 0}
+.vp{background:var(--vp-bg);border-color:var(--leaf)}.vp .c-count{color:var(--leaf)}.fn .c-count{color:var(--sun)}.fp .c-count{color:var(--coral)}.vn .c-count{color:var(--sky)}
+.c-count{-webkit-text-fill-color:#1d2557}.vp .c-tech{color:var(--leaf-deep)}
+.fn{background:var(--fn-bg);border-color:var(--sun)}.fn .c-tech{color:var(--sun-deep)}
+.fp{background:var(--fp-bg);border-color:var(--coral)}.fp .c-tech{color:var(--coral-deep)}
+.vn{background:var(--vn-bg);border-color:var(--sky)}.vn .c-tech{color:var(--sky-deep)}
+:root[data-theme="dark"] .cell .c-tech{color:var(--ink-soft)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cell .c-tech{color:var(--ink-soft)}}
+button.cell{box-shadow:0 5px 0 var(--shadow)}
+button.cell:not([aria-disabled="true"]):hover{transform:translateY(-2px)}
+button.cell:not([aria-disabled="true"]):active{transform:translateY(3px);box-shadow:0 2px 0 var(--shadow)}
+button.cell[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+.cell.shake{animation:shake .45s}
+.cell.win{animation:bump .5s}
+
+/* ---------- Aprende ---------- */
+.learn-body{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1.45fr;gap:clamp(16px,3vw,32px);align-items:stretch}
+.learn-a,.learn-b{min-height:0;display:flex;flex-direction:column}
+.learn-a h2{font-size:clamp(28px,3.6vw,38px)}
+.learn-a .lead{margin:8px 0 14px}
+.learn-b h3{display:none;font-size:26px;margin-bottom:10px}
+.learn-b .board-wrap{flex:1;min-height:0}
+.how{display:grid;gap:10px;margin:0;padding:0;list-style:none;counter-reset:q}
+.how li{counter-increment:q;display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start;background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:11px 12px}
+.how li::before{content:counter(q);display:grid;place-items:center;width:40px;height:40px;border-radius:13px;background:var(--sea);color:#fff;font-family:var(--display);font-weight:800;font-size:22px;padding-top:3px}
+.how b{font-family:var(--display);font-size:19px;display:block;line-height:1.15}
+.how span{font-size:15px;color:var(--ink-soft)}
+.real-life{margin:12px 0 0;font-size:15px;color:var(--ink-soft);background:var(--vn-bg);border-radius:16px;padding:10px 13px}
+.screen-foot{flex:none;display:flex;justify-content:space-between;gap:12px;margin-top:16px}
+.only-m{display:none}
+
+/* ---------- Juego ---------- */
+.trail{flex:none;position:relative;display:grid;grid-template-columns:repeat(10,1fr);align-items:center;margin:0 0 12px;padding:5px 0}
+.trail::before{content:"";position:absolute;left:5%;right:5%;top:50%;height:7px;transform:translateY(-50%);background:repeating-linear-gradient(90deg,var(--sand-deep) 0 12px,transparent 12px 22px);border-radius:8px}
+.stop{position:relative;justify-self:center;width:clamp(26px,4.4vw,42px);height:clamp(26px,4.4vw,42px);border-radius:50%;background:var(--card);border:3px solid var(--line);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:clamp(12px,1.6vw,16px);color:var(--ink-soft);transition:transform .3s}
+.stop.done{background:var(--leaf);border-color:#fff;color:#fff}
+.stop.star{background:var(--sun);border-color:#fff}
+.stop.now{transform:scale(1.3);border-color:var(--coral);background:#fff;z-index:2;padding:1px}
+.stop.now svg{width:100%;height:100%}
+.game{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1.15fr;grid-template-rows:minmax(0,1fr) auto;grid-template-areas:"scene board" "msg board";gap:12px clamp(14px,2.4vw,26px)}
+.scene-pane{grid-area:scene;min-height:0}
+.board-pane{grid-area:board;min-height:0}
+.scene{position:relative;height:100%;min-height:150px;border-radius:24px;overflow:hidden;background:linear-gradient(var(--scene-top) 0 52%,var(--scene-bottom) 52%);border:4px solid #fff;box-shadow:0 5px 0 var(--shadow);container-type:size}
+.sol-box{position:absolute;left:3cqw;top:5cqh;height:min(36cqh,30cqw);aspect-ratio:1}
+.sol-box svg{display:block;width:100%;height:100%;animation:float 2.4s ease-in-out infinite}
+.sol-box.happy svg{animation:hop .55s ease-in-out 2}
+.bubble{position:absolute;left:calc(5cqw + min(36cqh,30cqw));right:4cqw;top:7cqh;width:max-content;max-width:calc(91cqw - min(36cqh,30cqw));background:#fff;color:#1d2557;font-family:var(--display);font-weight:800;font-size:clamp(15px,min(5.4cqw,8.5cqh),24px);line-height:1.12;padding:.45em .75em .3em;border-radius:18px;box-shadow:0 5px 0 rgba(29,37,87,.15)}
+.bubble small{display:block;font-family:var(--body);font-size:.55em;font-weight:800;color:#6a7299;margin-bottom:1px}
+.bubble::after{content:"";position:absolute;left:-12px;top:50%;margin-top:-11px;border:11px solid transparent;border-right-color:#fff;border-left:0}
+.spot{position:absolute;left:50%;bottom:6cqh;transform:translateX(-50%);height:min(56cqh,52cqw);aspect-ratio:10/9;border:0;background:none;padding:0;border-radius:24px}
+.spot .found{position:absolute;left:50%;bottom:16%;transform:translateX(-50%) scale(.4);font-size:min(30cqh,22cqw);line-height:1;opacity:0;transition:transform .4s cubic-bezier(.2,1.6,.4,1) .15s,opacity .2s .15s;white-space:nowrap}
+.spot .found.empty{font-family:var(--display);font-weight:800;font-size:clamp(18px,min(7cqw,10cqh),28px);color:#1d2557;background:rgba(255,255,255,.88);padding:.3em .6em .15em;border-radius:14px}
+.spot .cover{position:absolute;inset:0;transition:transform .55s cubic-bezier(.3,1.3,.5,1),opacity .4s}
+.spot .cover svg{width:100%;height:100%;display:block}
+.spot .tap{position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);background:var(--coral);color:#fff;font-family:var(--display);font-weight:800;font-size:clamp(13px,min(4.5cqw,6cqh),17px);padding:5px 13px 2px;border-radius:999px;white-space:nowrap;box-shadow:0 4px 0 var(--coral-deep);animation:nudge 1.3s ease-in-out infinite}
+.spot.open .cover{transform:translate(38%,-62%) rotate(18deg) scale(.7);opacity:0}
+.spot.open .found{opacity:1;transform:translateX(-50%) scale(1)}
+.spot.open .tap{display:none}
+.spot.open{cursor:default}
+.msg{grid-area:msg;display:flex;gap:10px;align-items:center;min-height:58px;padding:8px 12px;border-radius:16px;background:var(--paper);border:2px solid var(--line);font-weight:800;font-size:16px;line-height:1.3;transition:background .2s,border-color .2s}
+.msg .n{flex:0 0 30px;height:30px;border-radius:10px;background:var(--sea);color:#fff;display:grid;place-items:center;font-family:var(--display);padding-top:2px}
+.msg.try{background:var(--fn-bg);border-color:var(--sun)}
+.msg.try .n{background:var(--sun-deep)}
+
+/* Ventana de acierto: aparece encima, sin empujar nada */
+.sheet{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translate(-50%,140%);width:min(560px,calc(100% - 20px));z-index:20;background:var(--card);border:4px solid var(--leaf);border-radius:24px;padding:14px 16px;box-shadow:0 8px 0 var(--leaf-deep),0 18px 40px rgba(20,25,60,.25);transition:transform .35s cubic-bezier(.2,1.25,.4,1);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+.sheet.open{transform:translate(-50%,0)}
+.sheet b{font-family:var(--display);font-size:21px;display:block;line-height:1.1;margin-bottom:2px}
+.sheet p{margin:0;font-size:15px;line-height:1.35}
+.sheet .btn{white-space:nowrap}
+.veil{position:fixed;inset:0;z-index:19;background:rgba(20,25,60,.12);opacity:0;pointer-events:none;transition:opacity .25s}
+.veil.open{opacity:1;pointer-events:auto}
+
+/* ---------- Resultado ---------- */
+.res-top{flex:none;display:flex;align-items:center;justify-content:center;gap:16px;text-align:left}
+.medal{font-size:clamp(56px,8vw,82px);line-height:1;animation:hop .7s ease-in-out 2}
+.res-top h2{font-size:clamp(26px,3.6vw,38px)}
+.stars-big{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,40px);line-height:1;margin:4px 0 0;color:var(--sun-deep)}
+:root[data-theme="dark"] .stars-big{color:var(--sun)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .stars-big{color:var(--sun)}}
+.res-text{flex:none;text-align:center;color:var(--ink-soft);margin:8px auto 12px;max-width:56ch;font-size:16px}
+.res-main{flex:1;min-height:0;display:grid;grid-template-columns:1.4fr 1fr;gap:16px;align-items:stretch}
+.res-board{min-height:0;display:flex;flex-direction:column}
+.res-board h3{font-size:19px;margin-bottom:8px;text-align:center}
+.res-board .board-wrap{flex:1;min-height:0}
+.sol-score{align-self:center;background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:14px 16px;font-size:15px;line-height:1.4}
+.sol-score b{font-family:var(--display);font-size:22px;line-height:1.15;display:block;margin-bottom:4px}
+.result .screen-foot{justify-content:center}
+
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes hop{0%,100%{transform:translateY(0) rotate(0)}40%{transform:translateY(-16px) rotate(-8deg)}70%{transform:translateY(-5px) rotate(6deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes nudge{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
+@keyframes enter{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.sol-rays{transform-origin:40px 40px;animation:spin 14s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- Celular / pantallas angostas ---------- */
+@media (max-width:820px){
+  body{font-size:16px}
+  .shell{width:calc(100% - 14px);padding:7px 0;gap:8px}
+  .topbar{padding:4px 6px 4px 10px;border-radius:16px}
+  .brand img{width:74px}
+  .icon-btn{width:38px;height:38px}
+  .star-chip{font-size:17px;padding:1px 11px 0}
+  .screen{border-radius:22px;padding:12px;box-shadow:0 5px 0 var(--shadow)}
+  .btn{font-size:18px;padding:13px 16px 10px}
+
+  .home{display:flex;flex-direction:column;align-items:stretch;gap:12px}
+  .home-art{order:-1;flex:1;height:auto;max-height:none}
+  .home-text{flex:none}
+  .home h1{font-size:clamp(38px,11vw,54px)}
+  .home h1 span{display:inline}
+  .lead{font-size:15px;margin:6px 0 12px}
+  .home .btn-row{flex-direction:column;gap:10px}
+  .facts{display:none}
+  .made{text-align:center;margin-top:10px;font-size:12px}
+
+  .learn-body{display:flex;flex-direction:column}
+  .learn[data-page="a"] .learn-b{display:none}
+  .learn[data-page="b"] .learn-a{display:none}
+  .learn-a,.learn-b{flex:1}
+  .learn-a{justify-content:center}
+  .learn-b h3{display:block}
+  .only-m{display:inline-block}
+  .only-d{display:none}
+  .screen-foot{margin-top:12px}
+  .screen-foot .btn{flex:1}
+
+  .trail{margin-bottom:8px}
+  .game{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto auto;grid-template-areas:"scene" "msg" "board";gap:8px}
+  .board-pane{height:clamp(190px,37dvh,330px)}
+  .msg{min-height:52px;font-size:15px;padding:7px 10px}
+  .sheet{grid-template-columns:1fr;gap:10px}
+  .sheet .btn{width:100%}
+
+  .res-main{display:flex;flex-direction:column;gap:10px}
+  .res-board{flex:1;min-height:0}
+  .res-board .board-wrap{flex:1;min-height:170px}
+  .result .screen-foot .btn,.learn .screen-foot .btn{font-size:17px;white-space:nowrap;padding-left:10px;padding-right:10px}
+  .sol-score{align-self:stretch;padding:10px 12px;font-size:14px}
+  .sol-score b{font-size:18px}
+  .res-text{font-size:14px;margin:4px auto 8px}
+}
+@media (max-width:520px){
+  .brand-name{display:none}
+  .board{gap:6px;grid-template-columns:58px 1fr 1fr}
+  .head{font-size:10.5px;padding:4px 2px;border-radius:12px}
+  .head b{font-size:13.5px}
+  .head .ico{width:20px;height:20px}
+  .cell{padding:7px 8px;border-width:3px;border-radius:14px}
+  .cell .c-ico{font-size:19px}
+  .cell .c-name{font-size:16px}
+  .cell .c-tech{font-size:10.5px}
+  .cell .c-desc{font-size:12.5px}
+  .cell .c-count{min-width:28px;height:28px;font-size:16px;top:-8px;right:-7px}
+  .how li{grid-template-columns:34px 1fr;padding:9px 10px}
+  .how li::before{width:34px;height:34px;font-size:19px}
+  .how b{font-size:17px}.how span{font-size:14px}
+  .learn-a h2{font-size:28px}
+  .res-top{gap:10px}
+}
+/* Celulares bajitos (o en horizontal): todo un poco más compacto */
+@media (max-height:720px) and (max-width:820px){
+  .res-text{display:none}
+  .res-board h3{font-size:16px;margin-bottom:4px}
+  .medal{font-size:46px}
+}
+@media (max-height:640px) and (max-width:820px){
+  .sol-score .extra{display:none}
+  .board-pane{height:clamp(170px,36dvh,260px)}
+  .msg{min-height:46px;font-size:14px}
+  .head .ico{display:none}
+  .cell .c-ico{display:none}
+  .real-life{display:none}
+  .home h1{font-size:36px}
+}
+/* PC o portátil con pantalla bajita */
+@media (min-width:821px) and (max-height:800px){
+  .home h1{font-size:clamp(44px,6.5vw,72px)}
+  .facts li{font-size:13px;padding:4px 11px}
+  .learn-a h2{font-size:30px}
+  .learn-a .lead{font-size:16px;margin:6px 0 10px}
+  .how{gap:8px}.how li{padding:8px 11px;grid-template-columns:36px 1fr}.how li::before{width:36px;height:36px;font-size:20px}
+  .how b{font-size:18px}.how span{font-size:14px;line-height:1.35}
+  .real-life{font-size:14px;padding:8px 12px;margin-top:8px}
+  .screen-foot{margin-top:10px}
+  .btn{padding:11px 20px 8px;font-size:19px}
+  .head .ico{width:20px;height:20px}
+  .cell .c-ico{font-size:21px}
+  .trail{margin-bottom:8px}
+  .medal{font-size:56px}.res-top h2{font-size:30px}.stars-big{font-size:28px}
+  .res-text{font-size:15px;margin:4px auto 8px}
+}
+@media (min-width:821px) and (max-height:700px){
+  .real-life,.res-text{display:none}
+  .res-top{margin-bottom:8px}
+}
+@media (max-height:500px){
+  .home-art{display:none}
+  .home{justify-content:center}
+}
+@media (max-height:560px) and (min-width:560px){
+  .game{grid-template-columns:1fr 1.1fr;grid-template-rows:minmax(0,1fr) auto;grid-template-areas:"scene board" "msg board"}
+  .board-pane{height:auto}
+  .trail{margin-bottom:6px}
+}
+
+/* ===== Misión Árbol: añadidos ===== */
+:root{--c0:#ffc23d;--c0b:#fff2cc;--c1:#ff6b6b;--c1b:#ffe5e5;--c2:#4f8cff;--c2b:#e4edff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--c0b:#3f3317;--c1b:#47222b;--c2b:#1d2d58}}
+:root[data-theme="dark"]{--c0b:#3f3317;--c1b:#47222b;--c2b:#1d2d58}
+.screen{overflow:auto}
+.missions{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0;list-style:none}
+.mchip{display:flex;align-items:center;gap:6px;background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:6px 11px;font-weight:800;font-size:14px;box-shadow:0 3px 0 var(--shadow)}
+.mchip:active{transform:translateY(2px);box-shadow:0 1px 0 var(--shadow)}
+.mchip small{font-weight:800;color:var(--sun-deep);font-size:12px}
+.tag{display:inline-block;font-size:12px;font-weight:800;color:var(--ink-soft);background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:0 8px;margin-left:4px;vertical-align:middle}
+/* franja de Sol */
+.strip{flex:none;display:flex;gap:10px;align-items:center;margin:0 0 10px}
+.sol-s{flex:none;width:62px;height:62px}
+.sol-s svg{width:100%;height:100%;display:block;animation:float 2.4s ease-in-out infinite}
+.sol-s.happy svg{animation:hop .55s ease-in-out 2}
+.say{position:relative;flex:1;min-width:0;background:var(--paper);border:2px solid var(--line);border-radius:16px;padding:8px 13px;font-weight:800;font-size:16px;line-height:1.3;transition:background .2s,border-color .2s}
+.say::before{content:"";position:absolute;left:-10px;top:50%;margin-top:-9px;border:9px solid transparent;border-right-color:var(--line);border-left:0}
+.say.try{background:var(--fn-bg);border-color:var(--sun)}.say.try::before{border-right-color:var(--sun)}
+.say.good{background:var(--vp-bg);border-color:var(--leaf)}.say.good::before{border-right-color:var(--leaf)}
+.say small{display:block;font-family:var(--body);font-size:12px;color:var(--ink-soft)}
+/* zona de juego */
+.tg{flex:1;min-height:0;display:grid;grid-template-columns:1.3fr 1fr;gap:12px}
+.tpane{min-height:0;overflow:auto;background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:6px;display:flex;align-items:flex-start}
+.tpane svg{display:block;margin:auto}
+.tside{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:2px 4px 8px 2px}
+.tn rect,.tn circle{transition:stroke .2s}
+.tn.hl rect,.tn.hl circle{stroke:var(--coral)!important;stroke-width:5!important}
+.tn.vis rect{stroke:var(--leaf)!important}
+.tn .q{font-family:var(--body);font-weight:800;fill:var(--ink)}
+.tn .s{font-family:var(--body);font-weight:700;fill:var(--ink-soft)}
+.pill-t{font-family:var(--display);font-weight:800;fill:var(--ink)}
+.gcard,.card{background:var(--card);border:3px solid var(--line);border-radius:18px;padding:10px 12px;box-shadow:0 4px 0 var(--shadow)}
+.g-title{font-family:var(--display);font-weight:800;font-size:19px;line-height:1.1}
+.g-sub{font-size:13px;color:var(--ink-soft);font-weight:700;margin:2px 0 8px}
+.mix{display:flex;height:26px;border-radius:9px;overflow:hidden;border:2px solid var(--line)}
+.mix i{display:grid;place-items:center;font-style:normal;font-size:13px;font-weight:800;color:#1d2557;min-width:0;overflow:hidden}
+.mix i:nth-child(1){background:var(--c0)}.mix i:nth-child(2){background:var(--c1)}.mix i:nth-child(3){background:var(--c2);color:#fff}
+.mixleg{display:flex;justify-content:space-between;gap:6px;font-size:13px;font-weight:800;margin-top:4px;color:var(--ink-soft)}
+.rev{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;font-weight:800}
+.rev .bar{flex:1;height:12px;border-radius:8px;background:var(--line);overflow:hidden}
+.rev .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--leaf),var(--sun),var(--coral));background-size:100vw 100%;border-radius:8px}
+.choices{display:grid;gap:8px}
+.choice{display:flex;align-items:center;gap:10px;text-align:left;background:var(--card);border:3px solid var(--line);border-radius:16px;padding:9px 12px 7px;box-shadow:0 4px 0 var(--shadow);font-family:var(--display);font-weight:800;font-size:19px;line-height:1.05;transition:transform .1s}
+.choice:active{transform:translateY(3px);box-shadow:0 1px 0 var(--shadow)}
+.choice .ci{font-size:24px}
+.choice small{display:block;font-family:var(--body);font-size:12.5px;color:var(--ink-soft);margin-top:2px}
+.choice.tried{background:var(--fn-bg);border-color:var(--sun)}
+.choice.hint{border-color:var(--coral);animation:pulse 1s ease-in-out 4}
+.choice.shake{animation:shake .45s}
+.choice[disabled]{opacity:.5;cursor:not-allowed}
+.yn{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.yn .btn{font-size:24px}
+.qbig{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.1;text-align:center;padding:4px 2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:2px 10px;font-weight:800;font-size:13.5px}
+.chip.glow{background:var(--fn-bg);border-color:var(--sun);animation:pulse 1s ease-in-out 3}
+.who{display:flex;align-items:center;gap:10px}
+.who .av{font-size:38px;line-height:1}
+.pickrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pickrow .choice{flex-direction:column;text-align:center;gap:2px;font-size:16px;padding:8px 4px 6px}
+.pickrow .choice .ci{font-size:28px}
+.hint-note{font-size:13.5px;color:var(--ink-soft);font-weight:700;text-align:center}
+/* laboratorio */
+.sl label{display:flex;justify-content:space-between;gap:8px;font-weight:800;font-size:15px;line-height:1.2}
+.sl label b{font-family:var(--display);font-size:20px;color:var(--sea-deep)}
+:root[data-theme="dark"] .sl label b{color:var(--sea)}
+.sl small{display:block;font-size:12.5px;color:var(--ink-soft);font-weight:700;margin:1px 0 2px}
+.sl input[type=range]{width:100%;accent-color:var(--coral);height:30px;margin:0}
+.gauge{margin-top:6px}
+.gauge .gl{display:flex;justify-content:space-between;font-weight:800;font-size:13.5px;line-height:1.2}
+.gauge .gb{height:16px;border-radius:9px;background:var(--line);overflow:hidden;margin-top:3px}
+.gauge .gb i{display:block;height:100%;border-radius:9px;transition:width .25s}
+.gauge.a i{background:var(--sea)}.gauge.b i{background:var(--leaf)}
+.chart svg{width:100%;height:auto;display:block}
+.chart .lg{font-size:12px;font-weight:800;display:flex;gap:12px;justify-content:center;margin-top:2px;color:var(--ink-soft)}
+/* repaso */
+.recap{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;padding:2px 4px 10px 2px}
+.recap .card h3{font-size:22px;margin-bottom:6px}
+.recap .card p{margin:4px 0;font-size:15px;color:var(--ink-soft)}
+.recap .wide{grid-column:1/-1}
+.recap ul.pl{margin:6px 0 0;padding:0 0 0 18px;font-size:15px}
+.recap ul.pl li{margin:3px 0}
+.votes{display:flex;gap:8px;justify-content:center;margin:10px 0;flex-wrap:wrap}
+.vote{background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:5px 9px;text-align:center;font-weight:800;font-size:12.5px;min-width:62px;animation:enter .3s both}
+.vote b{display:block;font-size:26px;line-height:1.1}
+.cmp{display:grid;gap:6px;margin-top:8px}
+.cmp div{display:grid;grid-template-columns:116px 1fr 30px;gap:8px;align-items:center;font-size:13px;font-weight:800}
+.cmp .cb{height:14px;border-radius:7px;background:var(--line);overflow:hidden}
+.cmp .cb i{display:block;height:100%;background:var(--sea);border-radius:7px}
+.cmp .top .cb i{background:var(--leaf)}
+.legend3{display:flex;flex-wrap:wrap;gap:6px 12px;margin:8px 0 0;font-size:13px;font-weight:800}
+.legend3 span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:5px;vertical-align:-1px}
+.legend3 .l0::before{background:var(--c0)}.legend3 .l1::before{background:var(--c1)}.legend3 .l2::before{background:var(--c2)}
+.res-extra{align-self:center;background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:14px 16px;font-size:15px;line-height:1.4}
+.res-extra b{font-family:var(--display);font-size:22px;line-height:1.15;display:block;margin-bottom:4px}
+.result .res-main{grid-template-columns:1.4fr 1fr}
+@media (max-width:820px){
+  .strip{margin-bottom:8px}.sol-s{width:50px;height:50px}.say{font-size:14.5px;padding:7px 10px}
+  .tg{display:flex;flex-direction:column;overflow:auto}
+  .tpane{flex:none;height:clamp(190px,34dvh,300px)}
+  .tside{overflow:visible;flex:none}
+  .recap{grid-template-columns:1fr}
+  .qbig{font-size:21px}
+  .result .res-main{display:flex;flex-direction:column}
+  .res-extra{align-self:stretch;padding:10px 12px;font-size:14px}.res-extra b{font-size:18px}
+}
+.sheet p b,.sheet p strong{display:inline;font-size:inherit;margin:0;font-family:inherit}
+.tpane svg{margin:0 auto}
+.sl input[type=range]{-webkit-appearance:none;appearance:none;background:transparent}
+.sl input[type=range]::-webkit-slider-runnable-track{height:12px;border-radius:8px;background:var(--line)}
+.sl input[type=range]::-moz-range-track{height:12px;border-radius:8px;background:var(--line)}
+.sl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--coral);border:3px solid #fff;margin-top:-9px;box-shadow:0 3px 0 var(--coral-deep)}
+.sl input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--coral);border:3px solid #fff;box-shadow:0 3px 0 var(--coral-deep)}
+/* Aprende: el contenido hace scroll dentro, el pie de botones nunca lo tapa */
+.learn-body{overflow:auto;padding:2px 4px 6px 2px}
+.learn-a,.learn-b{min-height:auto}
+.learn .screen-foot{padding-top:4px}
+@media (max-width:820px){.learn-a{justify-content:flex-start}.learn-a h2{font-size:26px}.real-life{display:block!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="topbar">
+  <div class="brand">
+    <img alt="Solvé" src="data:image/png;base64,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">
+    <span class="brand-name">Misión Árbol</span>
+  </div>
+  <div class="top-actions">
+    <div class="star-chip" aria-live="polite" title="Estrellas ganadas"><span aria-hidden="true">⭐</span><span id="starTotal">0</span></div>
+    <button class="icon-btn" id="homeBtn" aria-label="Ir al inicio" onclick="go('home')" hidden>🏝️</button>
+    <button class="icon-btn" id="soundBtn" aria-label="Silenciar sonidos" onclick="toggleSound()">🔊</button>
+  </div>
+</header>
+<main>
+<!-- INICIO -->
+<section class="screen home" id="scrHome">
+  <div class="home-text">
+    <h1><span>Misión </span><span>Árbol</span></h1>
+    <p class="lead">Sol tiene un puesto de desayunos en la isla y quiere adivinar qué le gusta comer a cada visitante. Su truco: hacer preguntas de “sí” o “no” una tras otra, como en el juego de adivinar. Eso es un <b>árbol de clasificación</b>. No necesitas saber nada: ¡Sol te lo enseña jugando!</p>
+    <div class="btn-row">
+      <button class="btn btn-go" onclick="go('learn')">🧭 Empezar la aventura</button>
+      <button class="btn btn-soft" onclick="startBuild()">Ya sé, ¡a jugar!</button>
+    </div>
+    <ul class="missions" id="missions"></ul>
+    <p class="made">Desarrollado por <b>Solvé</b> · Automatiza como necesitas, no como dicen.</p>
+  </div>
+  <div class="home-art" aria-hidden="true">
+    <svg viewBox="0 0 500 400" preserveAspectRatio="xMidYMax slice">
+      <g fill="#fff" opacity=".9"><ellipse cx="90" cy="70" rx="44" ry="16"/><ellipse cx="120" cy="58" rx="30" ry="18"/><ellipse cx="300" cy="44" rx="34" ry="12"/></g>
+      <ellipse cx="250" cy="300" rx="230" ry="70" fill="#ffe1a0"/>
+      <path d="M50 300 Q70 210 170 205 Q230 160 300 196 Q390 190 440 260 Q450 310 400 330 Q250 360 100 335 Q50 325 50 300Z" fill="#5fcf7d" stroke="#2f9f5b" stroke-width="5"/>
+      <path d="M110 310 Q180 285 240 305 T390 290" fill="none" stroke="#f3cf7f" stroke-width="20" stroke-linecap="round"/>
+      <path d="M110 310 Q180 285 240 305 T390 290" fill="none" stroke="#fff3c6" stroke-width="9" stroke-linecap="round" stroke-dasharray="3 12"/>
+      <g transform="translate(90 190)"><path d="M22 90 Q10 50 28 6" stroke="#98623b" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M28 8 Q-14 -5 -22 20 Q6 26 28 8 Q12 -18 38 -24 Q52 -2 28 8 Q56 -16 72 -2 Q62 20 28 8 Q60 20 54 42 Q32 36 28 8" fill="#178d68" stroke="#0e795a" stroke-width="3"/></g>
+      <g transform="translate(380 200)"><path d="M22 90 Q12 50 28 6" stroke="#98623b" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M28 8 Q-14 -5 -22 20 Q6 26 28 8 Q12 -18 38 -24 Q52 -2 28 8 Q56 -16 72 -2 Q62 20 28 8 Q60 20 54 42 Q32 36 28 8" fill="#178d68" stroke="#0e795a" stroke-width="3"/></g>
+      <g transform="translate(330 255)"><rect x="0" y="16" width="58" height="42" rx="8" fill="#b0602e" stroke="#7a3f22" stroke-width="4"/><path d="M-3 20 Q29 -16 61 20Z" fill="#ffc23d" stroke="#a85a2c" stroke-width="4"/><rect x="22" y="28" width="14" height="18" rx="5" fill="#ffe27a" stroke="#a85a2c" stroke-width="3"/></g>
+      <g transform="translate(160 262)"><ellipse cx="30" cy="34" rx="34" ry="22" fill="#2fa860"/><ellipse cx="12" cy="28" rx="20" ry="18" fill="#3cbc6e"/><ellipse cx="48" cy="26" rx="22" ry="20" fill="#3cbc6e"/></g>
+    </svg>
+    <div class="home-say">¡Vamos a explorar!</div>
+    <div class="home-sol" id="homeSol"></div>
+  </div>
+</section>
+<!-- APRENDE -->
+<section class="screen learn" id="scrLearn" data-page="a" hidden>
+  <div class="learn-body">
+    <div class="learn-a">
+      <h2>Un árbol es un juego de preguntas</h2>
+      <p class="lead">Sol encuestó a 439 visitantes: les preguntó su edad, género, estado civil, si hacen actividad física… y qué desayuno prefieren: 🥣 avena, 🍫 barrita o 🥛 cereal.</p>
+      <ol class="how">
+        <li><div><b>Empieza con todos juntos</b><span>Es la <u>raíz</u>: todos los visitantes mezclados. Hay de todo un poco.</span></div></li>
+        <li><div><b>Haz una pregunta de sí o no</b><span>Por ejemplo: “¿tiene 45 años o menos?”. Cada respuesta es una <u>rama</u> y separa a la gente en dos grupos.</span></div></li>
+        <li><div><b>Repite hasta que los grupos estén ordenados</b><span>El final de cada camino es una <u>hoja</u>: ahí el árbol da su respuesta (lo que la mayoría de ese grupo prefiere).</span></div></li>
+      </ol>
+      <p class="real-life">💡 Así deciden muchas apps: si te dan un crédito, qué anuncio ver o qué promo ofrecerte. Es una IA fácil de explicar.</p>
+    </div>
+    <div class="learn-b">
+      <h3>Así se ve un árbol</h3>
+      <div class="tpane" id="learnTree" style="flex:1"></div>
+      <div class="legend3"><span class="l0">🥣 Avena</span><span class="l1">🍫 Barrita</span><span class="l2">🥛 Cereal</span></div>
+    </div>
+  </div>
+  <div class="screen-foot">
+    <button class="btn btn-soft only-d" onclick="go('home')">Volver</button>
+    <button class="btn btn-soft only-m" onclick="learnBack()">Volver</button>
+    <button class="btn btn-go only-m" id="learnNext" onclick="learnNext()">Ver un árbol</button>
+    <button class="btn btn-go only-d" onclick="startBuild()">🌳 ¡Construir mi árbol!</button>
+  </div>
+</section>
+<!-- MISIÓN 1 -->
+<section class="screen" id="scrBuild" hidden>
+  <div class="trail" id="trailB"></div>
+  <div class="strip"><div class="sol-s" id="solB"></div><div class="say" id="sayB"></div></div>
+  <div class="tg">
+    <div class="tpane" id="treeB"></div>
+    <div class="tside"><div class="gcard" id="gcard"></div><div class="choices" id="choices"></div></div>
+  </div>
+</section>
+<!-- MISIÓN 2 -->
+<section class="screen" id="scrPath" hidden>
+  <div class="trail" id="trailP"></div>
+  <div class="strip"><div class="sol-s" id="solP"></div><div class="say" id="sayP"></div></div>
+  <div class="tg">
+    <div class="tpane" id="treeP"></div>
+    <div class="tside" id="sideP"></div>
+  </div>
+</section>
+<!-- MISIÓN 3 -->
+<section class="screen" id="scrLab" hidden>
+  <div class="strip"><div class="sol-s" id="solL"></div><div class="say" id="sayL"></div></div>
+  <div class="tg">
+    <div class="tpane" id="treeL"></div>
+    <div class="tside">
+      <div class="card">
+        <div class="sl"><label for="sDepth">Preguntas seguidas <b id="vDepth"></b></label><small>Cuántas preguntas puede encadenar el árbol.</small><input type="range" id="sDepth" min="0" max="6" value="1"></div>
+        <div class="sl" style="margin-top:6px"><label for="sMin">Mínimo de personas por hoja <b id="vMin"></b></label><small>Una hoja con muy poca gente no es confiable.</small><input type="range" id="sMin" min="1" max="40" value="1"></div>
+      </div>
+      <div class="card">
+        <div class="gauge a"><div class="gl"><span>🧑‍🤝‍🧑 Personas que Sol ya conocía</span><span id="gA"></span></div><div class="gb"><i id="bA"></i></div></div>
+        <div class="gauge b"><div class="gl"><span>🆕 Personas nuevas</span><span id="gB"></span></div><div class="gb"><i id="bB"></i></div></div>
+        <div class="chart" id="chart"></div>
+      </div>
+      <button class="btn btn-go" onclick="labDone()">✅ ¡Este es mi árbol!</button>
+    </div>
+  </div>
+</section>
+<!-- RESULTADO -->
+<section class="screen result" id="scrResult" hidden>
+  <div class="res-top">
+    <div class="medal" id="medal">🏆</div>
+    <div><h2 id="resTitle"></h2><p class="stars-big" id="resStars"></p></div>
+  </div>
+  <p class="res-text" id="resText"></p>
+  <div class="res-main">
+    <div class="res-board"><h3 id="resH"></h3><div class="tpane" id="resTree" style="flex:1"></div></div>
+    <div class="res-extra" id="resExtra"></div>
+  </div>
+  <div class="screen-foot" id="resFoot"></div>
+</section>
+<!-- REPASO -->
+<section class="screen" id="scrRecap" hidden>
+  <div class="strip"><div class="sol-s" id="solR"></div><div class="say">¡Lo lograste! Esto es lo que debes recordar de los árboles de clasificación.</div></div>
+  <div class="recap">
+    <div class="card">
+      <h3>🌳 Lo esencial</h3>
+      <ol class="pl">
+        <li>Un árbol es una <b>cadena de preguntas de sí/no</b>.</li>
+        <li>Cada pregunta busca separar a la gente en grupos <b>menos revueltos</b>.</li>
+        <li>Cada hoja da una <b>respuesta</b> y qué tan segura es (el % del grupo).</li>
+        <li>Ni muy corto ni muy enredado: se prueba con <b>personas nuevas</b>.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>👍 Lo bueno y 👎 lo malo</h3>
+      <p><b>Bueno:</b> se explica fácil con una historia (“los mayores prefieren avena; entre los jóvenes, los solteros prefieren barrita…”), detecta combinaciones de datos y no exige preparar mucho.</p>
+      <p><b>Malo:</b> es inestable. Si cambias un poco los datos, puede salir un árbol distinto, y si crece demasiado se aprende todo de memoria.</p>
+    </div>
+    <div class="card wide">
+      <h3>🌲 ¿Y si un solo árbol se equivoca? Un bosque</h3>
+      <p>La solución más usada es hacer <b>muchos árboles</b> distintos y dejar que <b>voten</b>, como preguntarle a 5 amigos en vez de a uno. Pruébalo con una persona real:</p>
+      <div id="forest"></div>
+      <div class="btn-row" style="margin-top:8px"><button class="btn btn-go" style="font-size:17px;padding:10px 16px 8px" onclick="forestVote()">🌲 Preguntar al bosque</button></div>
+      <p style="margin-top:8px">A esto se le llama <i>ensamble</i> (bosques aleatorios, bagging, boosting).</p>
+    </div>
+    <div class="card wide">
+      <h3>🔧 Hay más de una forma de hacer crecer un árbol</h3>
+      <p><b>CART</b> (el que usamos) mide qué tan revuelto queda cada grupo. <b>CHAID</b> usa una prueba estadística para decidir si vale la pena dividir, y se detiene solo. En la encuesta del desayuno dieron árboles distintos, y el primero acertó mejor.</p>
+      <p style="margin-top:6px"><b>Puntaje con personas nuevas</b> (del cuaderno original, de 0 a 100):</p>
+      <div class="cmp" id="cmp"></div>
+    </div>
+  </div>
+  <div class="screen-foot">
+    <button class="btn btn-soft" onclick="go('home')">🏝️ Inicio</button>
+    <button class="btn btn-go" onclick="startBuild()">🔁 Jugar otra vez</button>
+  </div>
+</section>
+</main>
+</div>
+<div class="veil" id="veil"></div>
+<div class="sheet" id="sheet" role="dialog" aria-live="polite" aria-label="¡Correcto!">
+  <div><b id="sheetTitle"></b><p id="sheetText"></p></div>
+  <button class="btn btn-go" id="sheetBtn" onclick="sheetNext()">Seguir</button>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const RAYS=[0,45,90,135,180,225,270,315].map(a=>`<rect x="36" y="1" width="8" height="17" rx="4" transform="rotate(${a} 40 40)"/>`).join('');
+const SOL=`<svg viewBox="0 0 80 80"><g class="sol-rays" fill="#ffa62b">${RAYS}</g><circle cx="40" cy="40" r="24" fill="#ffd23f" stroke="#f29a1f" stroke-width="3"/><circle cx="32" cy="37" r="3.8" fill="#5a3a1a"/><circle cx="48" cy="37" r="3.8" fill="#5a3a1a"/><circle cx="33.3" cy="35.7" r="1.3" fill="#fff"/><circle cx="49.3" cy="35.7" r="1.3" fill="#fff"/><circle cx="26.5" cy="45" r="4" fill="#ff8a8a" opacity=".75"/><circle cx="53.5" cy="45" r="4" fill="#ff8a8a" opacity=".75"/><path d="M33 47 Q40 54 47 47" fill="none" stroke="#5a3a1a" stroke-width="3" stroke-linecap="round"/></svg>`;
+const SOL_MINI=`<svg viewBox="0 0 80 80"><g fill="#ffa62b">${RAYS}</g><circle cx="40" cy="40" r="24" fill="#ffd23f" stroke="#f29a1f" stroke-width="3"/><circle cx="32" cy="38" r="4" fill="#5a3a1a"/><circle cx="48" cy="38" r="4" fill="#5a3a1a"/><path d="M33 47 Q40 54 47 47" fill="none" stroke="#5a3a1a" stroke-width="3.5" stroke-linecap="round"/></svg>`;
+/* ===== Datos y motor de árboles ===== */
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const CLS=['Avena','Barrita','Cereal'];
+const VARS={edad:{name:'la edad',cats:['Menor de 31','31-45','46-60','Más de 60']},genero:{name:'el género',cats:['Hombre','Mujer']},ecivil:{name:'el estado civil',cats:['Soltero','Casado']},activo:{name:'si hace actividad',cats:['En activo','Sin actividad']}};
+const VKEYS=['edad','genero','ecivil','activo'];
+/* hojas del árbol original: [edad, extra, avena, barrita, cereal] */
+function shuf(a,r){for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function mkRow(r,o){return Object.assign({genero:r()<.5?'Hombre':'Mujer',ecivil:r()<.5?'Soltero':'Casado',activo:r()<.5?'En activo':'Sin actividad'},o)}
+function buildTrain(seed){
+  const r=mulberry(seed||2016),rows=[];
+  const lab=(c)=>{const a=[];c.forEach((n,k)=>{for(let i=0;i<n;i++)a.push(k)});return shuf(a,r)};
+  const old=lab([141,29,69]);
+  old.forEach((k,i)=>rows.push(mkRow(r,{edad:i<106?'46-60':'Más de 60',cls:k})));
+  lab([6,30,17]).forEach(k=>rows.push(mkRow(r,{edad:'31-45',activo:'En activo',cls:k})));
+  lab([8,15,18]).forEach(k=>rows.push(mkRow(r,{edad:'31-45',activo:'Sin actividad',cls:k})));
+  lab([1,30,22]).forEach(k=>rows.push(mkRow(r,{edad:'Menor de 31',ecivil:'Soltero',cls:k})));
+  lab([2,16,35]).forEach(k=>rows.push(mkRow(r,{edad:'Menor de 31',ecivil:'Casado',cls:k})));
+  return rows;
+}
+function buildTest(seed){
+  const r=mulberry(seed||880),rows=[];
+  const pick=p=>{const x=r();return x<p[0]?0:x<p[0]+p[1]?1:2};
+  const mk=(n,o,p)=>{for(let i=0;i<n;i++)rows.push(mkRow(r,Object.assign({cls:pick(p)},o)))};
+  mk(107,{edad:'46-60'},[.59,.12,.29]);mk(134,{edad:'Más de 60'},[.59,.12,.29]);
+  mk(53,{edad:'31-45',activo:'En activo'},[.12,.56,.32]);mk(41,{edad:'31-45',activo:'Sin actividad'},[.19,.36,.45]);
+  mk(53,{edad:'Menor de 31',ecivil:'Soltero'},[.02,.57,.41]);mk(53,{edad:'Menor de 31',ecivil:'Casado'},[.04,.30,.66]);
+  return rows;
+}
+const gini=c=>{const n=c[0]+c[1]+c[2];if(!n)return 0;return 1-(c[0]*c[0]+c[1]*c[1]+c[2]*c[2])/(n*n)};
+const cnt=rows=>{const c=[0,0,0];rows.forEach(r=>c[r.cls]++);return c};
+const major=c=>c[0]>=c[1]&&c[0]>=c[2]?0:c[1]>=c[2]?1:2;
+/* mejor división de una variable (agrupa categorías en dos lados) */
+function splitsFor(rows,v){
+  const cats=VARS[v].cats.filter(c=>rows.some(r=>r[v]===c));
+  if(cats.length<2)return null;
+  const n=rows.length,g0=gini(cnt(rows));let best=null;
+  const m=cats.length;
+  for(let mask=1;mask<(1<<(m-1));mask++){ // la última categoría siempre queda a la derecha
+    const L=cats.filter((_,i)=>mask>>i&1),R=cats.filter(c=>!L.includes(c));
+    const a=rows.filter(r=>L.includes(r[v])),b=rows.filter(r=>!L.includes(r[v]));
+    const gain=n*g0-a.length*gini(cnt(a))-b.length*gini(cnt(b));
+    if(!best||gain>best.gain+1e-9)best={v,L,R,gain,a,b};
+  }
+  return best;
+}
+const EDAD_LBL={'Menor de 31|31-45':'45 años o menos','46-60|Más de 60':'46 años o más','Menor de 31':'menos de 31 años','31-45':'de 31 a 45 años','46-60':'de 46 a 60 años','Más de 60':'más de 60 años','Menor de 31|31-45|46-60':'60 años o menos','31-45|46-60|Más de 60':'más de 30 años','31-45|46-60':'de 31 a 60 años'};
+const edadLbl=L=>{const k=VARS.edad.cats.filter(c=>L.includes(c)).join('|');return EDAD_LBL[k]||L.join(' o ')};
+function qText(sp){const L=sp.L;
+  if(sp.v==='edad')return '¿Tiene '+edadLbl(L)+'?';
+  if(sp.v==='genero')return '¿Es '+L.join(' o ').toLowerCase()+'?';
+  if(sp.v==='ecivil')return '¿Está '+L.join(' o ').toLowerCase()+'?';
+  return L[0]==='En activo'?'¿Hace actividad física?':'¿Está sin actividad física?'}
+function sideText(v,cats){
+  if(v==='edad')return 'edad: '+edadLbl(cats);
+  if(v==='activo')return cats[0]==='En activo'?'hace actividad':'sin actividad';
+  return cats.join(' o ').toLowerCase()}
+let _id=0;
+function grow(rows,depth,o,rootG,rootN,conds){
+  const c=cnt(rows),node={id:++_id,n:rows.length,c,pred:major(c),depth,rows,conds};
+  if(depth>=o.maxDepth||rows.length<2||gini(c)===0)return node;
+  let best=null;(o.vars||VKEYS).forEach(v=>{const s=splitsFor(rows,v);
+    if(s&&s.a.length>=o.minLeaf&&s.b.length>=o.minLeaf&&(!best||s.gain>best.gain+1e-9))best=s});
+  if(!best||best.gain/(rootG*rootN)<o.cp)return node;
+  node.split={v:best.v,L:best.L,R:best.R,gain:best.gain};
+  node.kids=[grow(best.a,depth+1,o,rootG,rootN,conds.concat(sideText(best.v,best.L))),grow(best.b,depth+1,o,rootG,rootN,conds.concat(sideText(best.v,best.R)))];
+  return node;
+}
+function makeTree(rows,o){_id=0;return grow(rows,0,o,gini(cnt(rows)),rows.length,[])}
+function walk(t,row){while(t.split)t=t.split.L.includes(row[t.split.v])?t.kids[0]:t.kids[1];return t}
+function acc(t,rows){return rows.filter(r=>walk(t,r).pred===r.cls).length/rows.length}
+function leaves(t){return t.split?[...leaves(t.kids[0]),...leaves(t.kids[1])]:[t]}
+const mezcla=c=>Math.round(gini(c)/(2/3)*100);
+
+/* ===== App ===== */
+const TRAIN=buildTrain(2294),TEST=buildTest(1);
+const TARGET=makeTree(TRAIN,{maxDepth:9,minLeaf:5,cp:.003});
+const EMO=['🥣','🍫','🥛'],CNAME=['Avena','Barrita','Cereal'],CCOL=['var(--c0)','var(--c1)','var(--c2)'],CBG=['var(--c0b)','var(--c1b)','var(--c2b)'];
+const VICON={edad:'🎂',genero:'🚻',ecivil:'💍',activo:'🏃'};
+const VNAME={edad:'La edad',genero:'El género',ecivil:'El estado civil',activo:'La actividad física'};
+const VLABEL={edad:'Edad',genero:'Género',ecivil:'Estado civil',activo:'Actividad'};
+const pct=(a,n)=>Math.round(100*a/n);
+const pickOne=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+/* ---------- Dibujo del árbol (SVG) ---------- */
+function wrap(t,n){const w=t.split(' '),L=[];let c='';w.forEach(x=>{if((c+' '+x).trim().length>n&&c){L.push(c);c=x}else c=(c+' '+x).trim()});if(c)L.push(c);return L}
+function clone(t,done){const n={id:t.id,n:t.n,c:t.c,pred:t.pred,depth:t.depth};
+  if(t.split&&(!done||done.has(t.id))){n.split=t.split;n.kids=t.kids.map(k=>clone(k,done))}return n}
+function layout(t){let i=0,md=0;(function r(n,d){n._d=d;md=Math.max(md,d);if(n.split){n.kids.forEach(k=>r(k,d+1));n._x=(n.kids[0]._x+n.kids[1]._x)/2}else n._x=i++})(t,0);return{L:i,md}}
+function treeSVG(t,o={}){
+  o=Object.assign({hl:null,vis:new Set(),tags:false},o);
+  const {L,md}=layout(t);
+  const mode=o.size||(L<=6?'big':L<=14?'mid':'dot');
+  const D={big:{W:122,H:64,gx:16,gy:50},mid:{W:36,H:26,gx:6,gy:30},dot:{W:12,H:12,gx:3,gy:20}}[mode];
+  const pad=8,top=o.tags?30:0,bot=o.tags?32:0;
+  const W=L*(D.W+D.gx)-D.gx+2*pad,H=(md+1)*(D.H+D.gy)-D.gy+2*pad+top+bot;
+  const X=n=>pad+n._x*(D.W+D.gx),Y=n=>pad+top+n._d*(D.H+D.gy);
+  let edges='',nodes='',tags='';
+  (function r(n){
+    if(n.split)n.kids.forEach((k,i)=>{
+      const a=X(n)+D.W/2,b=Y(n)+D.H,c=X(k)+D.W/2,d=Y(k),on=o.vis.has(n.id)&&(o.vis.has(k.id)||o.hl===k.id);
+      edges+=`<path d="M${a} ${b}C${a} ${b+D.gy*.55} ${c} ${d-D.gy*.55} ${c} ${d}" fill="none" stroke="${on?'var(--leaf)':'var(--ink-soft)'}" stroke-opacity="${on?1:.45}" stroke-width="${on?5:2.5}"/>`;
+      if(mode==='big'){const mx=c+(a-c)*.18,my=d-D.gy*.4;
+        edges+=`<g><rect x="${mx-13}" y="${my-10}" width="26" height="19" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/><text x="${mx}" y="${my+4}" text-anchor="middle" class="q" font-size="12">${i?'No':'Sí'}</text></g>`}
+      r(k)});
+    const x=X(n),y=Y(n),leaf=!n.split,cls=['tn'];if(o.hl===n.id)cls.push('hl');if(o.vis.has(n.id))cls.push('vis');
+    let g='';
+    if(mode==='big'){
+      if(leaf){const p=pct(n.c[n.pred],n.n),bw=D.W-18;let acc=0,seg='';
+        n.c.forEach((v,k)=>{const w=bw*v/n.n;seg+=`<rect x="${9+acc}" y="${D.H-17}" width="${w}" height="9" fill="${CCOL[k]}"/>`;acc+=w});
+        g=`<rect width="${D.W}" height="${D.H}" rx="14" fill="${CBG[n.pred]}" stroke="${CCOL[n.pred]}" stroke-width="3.5"/>
+        <text x="${D.W/2}" y="21" text-anchor="middle" class="q" font-size="14">${EMO[n.pred]} ${CNAME[n.pred]}</text>
+        <text x="${D.W/2}" y="36" text-anchor="middle" class="s" font-size="10.5">${p}% · ${n.n} personas</text>${seg}
+        <rect x="9" y="${D.H-17}" width="${bw}" height="9" rx="3" fill="none" stroke="var(--ink-soft)" stroke-opacity=".35"/>`}
+      else{const q=qText(n.split),ls=wrap(q,17).slice(0,2);ls[0]=VICON[n.split.v]+' '+ls[0];
+        g=`<rect width="${D.W}" height="${D.H}" rx="14" fill="var(--card)" stroke="var(--sea-deep)" stroke-width="3.5"/>`+
+          ls.map((s,i)=>`<text x="${D.W/2}" y="${ls.length>1?21+i*15:28}" text-anchor="middle" class="q" font-size="12">${s}</text>`).join('')+
+          `<text x="${D.W/2}" y="${D.H-9}" text-anchor="middle" class="s" font-size="10">${n.n} personas</text>`}
+      if(o.hl===n.id)g+=`<circle cx="${D.W-4}" cy="2" r="11" fill="var(--coral)"/><text x="${D.W-4}" y="7" text-anchor="middle" fill="#fff" font-weight="800" font-size="15" font-family="var(--display)">?</text>`;
+    }else if(mode==='mid'){
+      g=leaf?`<rect width="${D.W}" height="${D.H}" rx="8" fill="${CBG[n.pred]}" stroke="${CCOL[n.pred]}" stroke-width="2.5"/><text x="${D.W/2}" y="18" text-anchor="middle" font-size="14">${EMO[n.pred]}</text>`
+            :`<rect width="${D.W}" height="${D.H}" rx="8" fill="var(--card)" stroke="var(--sea-deep)" stroke-width="2.5"/><text x="${D.W/2}" y="18" text-anchor="middle" font-size="13">${VICON[n.split.v]}</text>`;
+    }else{
+      g=`<circle cx="6" cy="6" r="6" fill="${leaf?CCOL[n.pred]:'var(--card)'}" stroke="${leaf?'var(--ink-soft)':'var(--sea-deep)'}" stroke-opacity="${leaf?.3:1}" stroke-width="2"/>`}
+    nodes+=`<g class="${cls.join(' ')}" transform="translate(${x} ${y})">${g}</g>`;
+    if(o.tags&&mode==='big'){
+      if(n.depth===0)tags+=pillSVG(x+D.W/2,y-13,'🌱 Raíz: todos juntos');
+      if(leaf&&!tags.includes('Hoja'))tags+=pillSVG(x+D.W/2,y+D.H+16,'🍃 Hoja: la respuesta')}
+  })(t);
+  const nat=Math.max(W,mode==='big'?W*.78:W);
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:${Math.round(mode==='big'?W*.72:Math.min(W,260))}px;max-height:${Math.round(H*1.25)}px" role="img" aria-label="Árbol de clasificación con ${L} hojas">${edges}${nodes}${tags}</svg>`;
+}
+function pillSVG(cx,cy,t){const w=t.length*6.4+16;return `<g><rect x="${cx-w/2}" y="${cy-11}" width="${w}" height="22" rx="11" fill="var(--coral)"/><text x="${cx}" y="${cy+4}" text-anchor="middle" class="pill-t" fill="#fff" style="fill:#fff" font-size="12">${t}</text></g>`}
+
+function focusNode(id){const pane=$(id),el=pane.querySelector('.tn.hl');if(!el)return;
+  requestAnimationFrame(()=>{const pr=pane.getBoundingClientRect(),er=el.getBoundingClientRect();pane.scrollLeft+=er.left+er.width/2-pr.left-pr.width/2;pane.scrollTop+=er.top+er.height/2-pr.top-pr.height/2})}
+/* ---------- Tarjetas de grupo ---------- */
+function mixBar(c){const n=c[0]+c[1]+c[2];
+  return `<div class="mix">${c.map((v,k)=>`<i style="width:${100*v/n}%">${100*v/n>16?EMO[k]:''}</i>`).join('')}</div>
+  <div class="mixleg">${c.map((v,k)=>`<span>${EMO[k]} ${pct(v,n)}%</span>`).join('')}</div>`}
+function revBar(c){const m=mezcla(c),col=m>=85?'var(--coral)':m>=65?'var(--sun)':'var(--leaf)';return `<div class="rev"><span>Revoltura</span><span class="bar"><i style="width:${m}%;background:${col}"></i></span><span>${m}%</span></div>`}
+function groupCard(nd){
+  const t=nd.conds.length?nd.conds.join(' · '):'Todos los visitantes';
+  return `<div class="g-title">👥 ${nd.n} personas</div><div class="g-sub">${t}</div>${mixBar(nd.c)}${revBar(nd.c)}`}
+
+/* ---------- Sonido, récords, navegación ---------- */
+let soundOn=true,actx=null;
+function tone(freqs,dur=.12,type='sine',vol=.12){
+  if(!soundOn)return;
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    freqs.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=type;o.frequency.value=f;
+      const t=actx.currentTime+i*dur;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur*1.6);
+      o.connect(g).connect(actx.destination);o.start(t);o.stop(t+dur*1.7);});
+  }catch(e){}
+}
+function toggleSound(){soundOn=!soundOn;$('soundBtn').textContent=soundOn?'🔊':'🔇';$('soundBtn').setAttribute('aria-label',soundOn?'Silenciar sonidos':'Activar sonidos');}
+const MAXS={m1:4,m2:10,m3:3};
+function getBest(){try{return JSON.parse(localStorage.getItem('mt-best'))||{}}catch(e){return{}}}
+function setBest(k,v){const b=getBest();if(v>(b[k]||0)){b[k]=v;try{localStorage.setItem('mt-best',JSON.stringify(b))}catch(e){}}refreshStars()}
+function refreshStars(){const b=getBest();$('starTotal').textContent=(b.m1||0)+(b.m2||0)+(b.m3||0);
+  const nm=[['m1','🌳 1 · Construir','startBuild()'],['m2','🧭 2 · Predecir','startPath()'],['m3','⚖️ 3 · Punto justo','startLab()']];
+  $('missions').innerHTML=nm.map(([k,t,f])=>`<li><button class="mchip" onclick="${f}">${t} <small>⭐${b[k]||0}/${MAXS[k]}</small></button></li>`).join('')+`<li><button class="mchip" onclick="go('recap')">📘 Repaso</button></li>`}
+const SCREENS={home:'scrHome',learn:'scrLearn',build:'scrBuild',path:'scrPath',lab:'scrLab',result:'scrResult',recap:'scrRecap'};
+function go(name){
+  closeSheet();
+  Object.entries(SCREENS).forEach(([k,id])=>{const el=$(id);el.hidden=k!==name;
+    if(k===name){el.classList.remove('enter');void el.offsetWidth;el.classList.add('enter')}});
+  $('homeBtn').hidden=name==='home';
+  if(name==='learn')setLearnPage('a');
+  if(name==='home')refreshStars();
+  if(name==='recap'){$('forest').innerHTML='';}
+}
+function setLearnPage(p){
+  $('scrLearn').dataset.page=p;
+  $('learnNext').textContent=p==='a'?'Ver un árbol':'🌳 ¡Construir mi árbol!';
+  if(p==='b'||innerWidth>820)$('learnTree').innerHTML=treeSVG(clone(TARGET),{tags:true});
+}
+function learnNext(){if($('scrLearn').dataset.page==='a')setLearnPage('b');else startBuild()}
+function learnBack(){if($('scrLearn').dataset.page==='b')setLearnPage('a');else go('home')}
+function say(id,html,kind='',small=''){const e=$(id);e.className='say '+kind;e.innerHTML=(small?`<small>${small}</small>`:'')+html}
+function trail(id,n,state){const e=$(id);e.style.gridTemplateColumns=`repeat(${n},1fr)`;
+  e.innerHTML=Array.from({length:n},(_,i)=>`<div class="stop" id="${id}${i}">${i+1}</div>`).join('')}
+function trailUpdate(id,n,cur,stars){for(let i=0;i<n;i++){const s=$(id+i);s.className='stop';
+  if(i===cur){s.classList.add('now');s.innerHTML=SOL_MINI}
+  else if(i<cur){s.classList.add('done');if(stars[i]){s.classList.add('star');s.textContent='⭐'}else s.textContent='✓'}
+  else s.textContent=i+1}}
+let sheetTimer=null,sheetCb=null;
+function openSheet(title,text,btn,cb,delay=450){sheetCb=cb;$('sheetTitle').textContent=title;$('sheetText').innerHTML=text;$('sheetBtn').textContent=btn;
+  sheetTimer=setTimeout(()=>{$('sheet').classList.add('open');$('veil').classList.add('open');$('sheetBtn').focus({preventScroll:true})},delay)}
+function closeSheet(){clearTimeout(sheetTimer);$('sheet').classList.remove('open');$('veil').classList.remove('open')}
+function sheetNext(){const cb=sheetCb;sheetCb=null;closeSheet();if(cb)setTimeout(cb,150)}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&$('sheet').classList.contains('open')&&document.activeElement!==$('sheetBtn'))sheetNext()});
+const solHappy=id=>{const e=$(id);e.classList.remove('happy');void e.offsetWidth;e.classList.add('happy')};
+
+/* ================= MISIÓN 1: construir ================= */
+let B={};
+const bfsInternal=t=>{const q=[t],o=[];while(q.length){const n=q.shift();if(n.split){o.push(n);q.push(...n.kids)}}return o};
+function startBuild(){
+  B={order:bfsInternal(TARGET),i:0,done:new Set(),stars:[],miss:0,tried:{}};
+  trail('trailB',B.order.length);go('build');renderBuild();
+}
+function renderBuild(){
+  const nd=B.order[B.i];B.miss=0;B.tried={};
+  trailUpdate('trailB',B.order.length,B.i,B.stars);
+  $('treeB').innerHTML=treeSVG(clone(TARGET,B.done),{hl:nd.id});focusNode('treeB');
+  $('gcard').innerHTML=groupCard(nd);
+  say('sayB',B.i===0?'Aquí están todos los visitantes mezclados. Elige la pregunta que mejor los separe en grupos más ordenados.':'Este grupo todavía está revuelto. ¿Qué pregunta lo separa mejor?','','Pregunta '+(B.i+1)+' de '+B.order.length);
+  drawChoices(nd);
+}
+function drawChoices(nd,hint){
+  $('choices').innerHTML=VKEYS.map(v=>{const t=B.tried[v];
+    return `<button class="choice${t!=null?' tried':''}${hint===v?' hint':''}" data-v="${v}" onclick="pickVar('${v}',this)"><span class="ci">${VICON[v]}</span><span>${VNAME[v]}${t!=null?`<small>Probaste: la revoltura queda en ${t}%</small>`:''}</span></button>`}).join('');
+}
+function pickVar(v,btn){
+  const nd=B.order[B.i],s=splitsFor(nd.rows,v);
+  if(!s){say('sayB','Con esa pregunta no se puede separar este grupo. Prueba otra.','try');return}
+  const m0=mezcla(nd.c),m1=Math.round((s.a.length*gini(cnt(s.a))+s.b.length*gini(cnt(s.b)))/nd.n/(2/3)*100);
+  if(v!==nd.split.v){
+    B.miss++;B.tried[v]=m1;tone([200,160],.12,'square',.05);
+    drawChoices(nd,B.miss>=2?nd.split.v:null);
+    const b=$('choices').querySelector(`[data-v="${v}"]`);b.classList.add('shake');
+    say('sayB',`Con <u>${VNAME[v].toLowerCase()}</u> la revoltura baja de ${m0}% a ${m1}%. ¡Sirve poco! Hay una pregunta que separa mejor. Prueba otra.`,'try');
+    return;
+  }
+  B.done.add(nd.id);const star=B.miss===0;B.stars[B.i]=star;
+  $('treeB').innerHTML=treeSVG(clone(TARGET,B.done),{hl:null});
+  solHappy('solB');tone([523,659,784,1047],.09,'triangle');
+  say('sayB',`¡Esa es! La revoltura baja de ${m0}% a ${m1}%.`,'good');
+  const last=B.i===B.order.length-1;
+  openSheet(star?'⭐ ¡Mejor pregunta! Ganaste una estrella':'✓ ¡Esa es la mejor!',
+    `<b>${qText(nd.split)}</b> Los que dicen <b>Sí</b> van a un grupo de ${s.a.length} personas y los que dicen <b>No</b> a otro de ${s.b.length}. Cada grupo quedó más ordenado.`,
+    last?'🌳 Ver mi árbol':'Siguiente pregunta',()=>{B.i++;if(B.i<B.order.length)renderBuild();else finishBuild()});
+}
+function finishBuild(){
+  const st=B.stars.filter(Boolean).length;setBest('m1',st);
+  trailUpdate('trailB',B.order.length,B.order.length,B.stars);
+  const lv=leaves(TARGET);
+  showResult({medal:st===4?'🏆':st>=3?'🥇':st>=2?'🥈':'🌱',title:st===4?'¡Árbol perfecto!':st>=2?'¡Tu árbol está listo!':'¡Tu árbol está listo!',stars:`⭐ ${st} de 4`,
+    text:'Cada pregunta separó mejor a los visitantes. Ahora Sol ya puede usarlo para adivinar.',h:'Así quedó tu árbol',tree:treeSVG(clone(TARGET)),
+    extra:`<b>Tu árbol tiene ${lv.length} hojas</b>Cada hoja es una respuesta. Por ejemplo: <i>“las personas de más de 45 años prefieren 🥣 avena”</i>. Fíjate que la edad se usó dos veces: un árbol puede repetir una pregunta.`,
+    foot:[['🔁 Repetir','startBuild()','soft'],['🧭 Misión 2: ¡usar el árbol!','startPath()','go']]});
+}
+
+/* ================= MISIÓN 2: seguir el camino ================= */
+let P={};
+const NAMES={Mujer:['Lucía','Camila','Valentina','Sofía','Daniela','Mariana','Paula','Andrea'],Hombre:['Mateo','Santiago','Diego','Sebastián','Andrés','Felipe','Camilo','Nicolás']};
+function makeVisitors(){
+  const out=[];leaves(TARGET).forEach(l=>{const pool=TEST.filter(r=>walk(TARGET,r).id===l.id);out.push(...shuffle(pool.slice()).slice(0,2))});
+  const names={Mujer:shuffle(NAMES.Mujer.slice()),Hombre:shuffle(NAMES.Hombre.slice())};
+  return shuffle(out).map(r=>({row:r,name:names[r.genero].pop(),av:r.genero==='Mujer'?pickOne(['👩','👩‍🦱','👩‍🦰']):pickOne(['👨','👨‍🦱','👨‍🦰'])}));
+}
+function startPath(){
+  P={vs:makeVisitors(),i:0,stars:[],real:0};
+  trail('trailP',P.vs.length);go('path');renderVisitor();
+}
+function renderVisitor(){
+  const v=P.vs[P.i];P.cur=TARGET;P.vis=new Set();P.miss=0;
+  trailUpdate('trailP',P.vs.length,P.i,P.stars);
+  say('sayP',`Llegó <b>${v.name}</b>. Empieza en la raíz y contesta cada pregunta usando su ficha.`,'', 'Visitante '+(P.i+1)+' de '+P.vs.length);
+  renderStep();
+}
+function ficha(v,glow){const r=v.row;
+  const items=[['edad','🎂','Edad',r.edad],['genero','🚻','Género',r.genero],['ecivil','💍','Estado civil',r.ecivil],['activo','🏃','Actividad',r.activo]];
+  return `<div class="card"><div class="who"><span class="av">${v.av}</span><div><div class="g-title">${v.name}</div><div class="g-sub" style="margin:0">Su ficha</div></div></div>
+  <div class="chips">${items.map(([k,i,l,val])=>`<span class="chip${glow===k?' glow':''}">${i} ${l}: ${val}</span>`).join('')}</div></div>`}
+function renderStep(glow){
+  const v=P.vs[P.i],c=P.cur;
+  $('treeP').innerHTML=treeSVG(clone(TARGET),{hl:c.id,vis:P.vis});focusNode('treeP');
+  let h=ficha(v,glow);
+  if(c.split){
+    h+=`<div class="card"><div class="qbig">${qText(c.split)}</div></div><div class="yn"><button class="btn btn-go" onclick="answer(true)">Sí</button><button class="btn btn-soft" onclick="answer(false)">No</button></div>`;
+  }else{
+    const p=pct(c.c[c.pred],c.n);
+    h+=`<div class="card"><div class="g-title">🍃 ¡Llegó a una hoja!</div><div class="g-sub">De ${c.n} personas parecidas a ${v.name}, así eligieron:</div>${mixBar(c.c)}</div>
+    <div class="qbig" style="font-size:20px">¿Qué desayuno le ofrece Sol?</div>
+    <div class="pickrow">${[0,1,2].map(k=>`<button class="choice" onclick="predict(${k},this)"><span class="ci">${EMO[k]}</span>${CNAME[k]}</button>`).join('')}</div>`;
+    say('sayP',`¡Terminó el camino! Mira la barra: ¿qué desayuno eligió más gente de este grupo?`,'good');
+  }
+  $('sideP').innerHTML=h;
+}
+function answer(yes){
+  const v=P.vs[P.i],c=P.cur,truth=c.split.L.includes(v.row[c.split.v]);
+  if(yes!==truth){P.miss++;tone([200,160],.12,'square',.05);
+    const b=document.querySelectorAll('#sideP .yn .btn')[yes?0:1];b.classList.add('shake');
+    say('sayP',`Mira su ficha: ${VLABEL[c.split.v].toLowerCase()} = <u>${v.row[c.split.v]}</u>. ¿Cumple con “${qText(c.split).replace(/[¿?]/g,'')}”?`,'try');
+    const sv=c.split.v;document.querySelectorAll('#sideP .chip').forEach((el,i)=>{if(VKEYS[i]===sv){el.classList.remove('glow');void el.offsetWidth;el.classList.add('glow')}});return}
+  tone([523,784],.08,'triangle');P.vis.add(c.id);P.cur=c.kids[truth?0:1];
+  say('sayP',`¡Bien! Dijiste <b>${truth?'Sí':'No'}</b>. Sigue por esa rama.`,'good');
+  renderStep();
+}
+function predict(k,btn){
+  const v=P.vs[P.i],c=P.cur;
+  if(k!==c.pred){P.miss++;btn.classList.add('shake');tone([200,160],.12,'square',.05);
+    say('sayP','Casi. Elige el desayuno de la <u>barra más larga</u>: el que más personas de este grupo escogieron.','try');return}
+  const star=P.miss===0;P.stars[P.i]=star;const hit=v.row.cls===c.pred;if(hit)P.real++;
+  solHappy('solP');tone([523,659,784,1047],.09,'triangle');
+  const last=P.i===P.vs.length-1;
+  openSheet(star?'⭐ ¡Camino perfecto! Una estrella':'✓ ¡Camino completo!',
+    `En la vida real, ${v.name} eligió <b>${EMO[v.row.cls]} ${CNAME[v.row.cls]}</b>. ${hit?'<b>¡El árbol acertó!</b>':'Esta vez el árbol <b>falló</b>… y es normal: un árbol no acierta el 100% de las veces.'}`,
+    last?'🏆 Ver resultado':'Siguiente visitante',()=>{P.i++;if(P.i<P.vs.length)renderVisitor();else finishPath()});
+}
+function finishPath(){
+  const st=P.stars.filter(Boolean).length;setBest('m2',st);
+  showResult({medal:st===10?'🏆':st>=8?'🥇':st>=5?'🥈':'🌱',title:st===10?'¡Explorador legendario!':st>=8?'¡Casi perfecto!':st>=5?'¡Vas muy bien!':'¡Buen comienzo!',stars:`⭐ ${st} de 10`,
+    text:st>=8?'Seguiste cada camino sin perderte.':'Recuerda: lee la ficha, responde Sí o No y baja por la rama.',h:'Tu árbol, en acción',tree:treeSVG(clone(TARGET)),
+    extra:`<b>El árbol acertó ${P.real} de 10</b>Adivinar al azar acierta 1 de cada 3 (unos 3 de 10). Con solo 4 preguntas, el árbol lo hace mucho mejor, aunque nunca es perfecto. Por eso se mide con <u>personas nuevas</u>: es lo que haremos en la Misión 3.`,
+    foot:[['🔁 Repetir','startPath()','soft'],['⚖️ Misión 3: el punto justo','startLab()','go']]});
+}
+
+/* ================= MISIÓN 3: punto justo ================= */
+const labCache={};
+function labTree(d,m){const k=d+'_'+m;return labCache[k]||(labCache[k]=makeTree(TRAIN,{maxDepth:d,minLeaf:m,cp:0}))}
+let BEST=0;
+(function(){for(let d=0;d<=6;d++)for(const m of[1,5,10,20,30,40])BEST=Math.max(BEST,acc(labTree(d,m),TEST))})();
+function startLab(){$('sDepth').value=1;$('sMin').value=1;go('lab');say('sayL','Mueve los controles y mira cómo cambia el árbol y las dos barras. Busca el punto donde le va <b>bien con gente nueva</b>.','','Misión 3');renderLab()}
+function labState(){const d=+$('sDepth').value,m=+$('sMin').value,t=labTree(d,m);return{d,m,t,tr:acc(t,TRAIN),te:acc(t,TEST),lv:leaves(t).length}}
+function renderLab(){
+  const s=labState();
+  $('vDepth').textContent=s.d;$('vMin').textContent=s.m;
+  $('treeL').innerHTML=treeSVG(clone(s.t));
+  $('gA').textContent=Math.round(s.tr*100)+'%';$('bA').style.width=s.tr*100+'%';
+  $('gB').textContent=Math.round(s.te*100)+'%';$('bB').style.width=s.te*100+'%';
+  const gap=s.tr-s.te;let k='',msg;
+  if(s.lv<=2){msg=`Un árbol <b>demasiado simple</b> (${s.lv} ${s.lv===1?'hoja':'hojas'}): casi no pregunta y se queda corto.`;k='try'}
+  else if(s.lv>=14&&gap>.02){msg=`Un árbol <b>muy enredado</b> (${s.lv} hojas): se aprendió de memoria a la gente que ya conocía y le va peor con gente nueva.`;k='try'}
+  else if(s.te>=BEST-.012&&s.lv<=8){msg=`¡Buen punto! Un árbol de ${s.lv} hojas, ni corto ni enredado, que funciona bien con gente nueva.`;k='good'}
+  else msg=`Un árbol de ${s.lv} hojas. Sigue probando: busca el punto donde la barra de personas nuevas sea la más alta.`;
+  say('sayL',msg,k,'Misión 3');
+  /* gráfico */
+  const pts=[0,1,2,3,4,5,6].map(d=>{const t=labTree(d,s.m);return[acc(t,TRAIN),acc(t,TEST)]});
+  const W=300,H=130,l=30,r=8,t=8,b=22,X=d=>l+d*(W-l-r)/6,lo=.3,hi=.65,Y=v=>t+(1-(v-lo)/(hi-lo))*(H-t-b);
+  const line=(i,c)=>`<polyline fill="none" stroke="${c}" stroke-width="3.5" stroke-linejoin="round" points="${pts.map((p,d)=>X(d)+','+Y(p[i])).join(' ')}"/>`;
+  $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Aciertos según las preguntas seguidas">
+   ${[.3,.4,.5,.6].map(v=>`<line x1="${l}" x2="${W-r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${l-4}" y="${Y(v)+4}" text-anchor="end" font-size="10" fill="var(--ink-soft)" font-weight="800">${v*100}%</text>`).join('')}
+   ${[0,1,2,3,4,5,6].map(d=>`<text x="${X(d)}" y="${H-6}" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)" font-weight="800">${d}</text>`).join('')}
+   ${line(0,'var(--sea)')}${line(1,'var(--leaf)')}
+   <line x1="${X(s.d)}" x2="${X(s.d)}" y1="${t}" y2="${H-b}" stroke="var(--coral)" stroke-width="2" stroke-dasharray="4 4"/>
+   <circle cx="${X(s.d)}" cy="${Y(pts[s.d][0])}" r="5" fill="var(--sea)" stroke="#fff" stroke-width="2"/><circle cx="${X(s.d)}" cy="${Y(pts[s.d][1])}" r="5" fill="var(--leaf)" stroke="#fff" stroke-width="2"/></svg>
+   <div class="lg"><span style="color:var(--sea-deep)">━ gente conocida</span><span style="color:var(--leaf-deep)">━ gente nueva</span><span>· preguntas seguidas →</span></div>`;
+}
+$('sDepth').addEventListener('input',renderLab);$('sMin').addEventListener('input',renderLab);
+function labDone(){
+  const s=labState();let st,title,text;
+  const sweet=s.te>=BEST-.012&&s.lv<=8;
+  if(sweet){st=3;title='¡Punto justo!';text='Encontraste el equilibrio: lo bastante detallado para aprender, lo bastante simple para no memorizar.'}
+  else if(s.te>=BEST-.035&&s.lv>2){st=2;title='¡Muy cerca!';text='Tu árbol funciona bien, pero se puede afinar un poco más.'}
+  else{st=1;title='¡Buen intento!';text=s.lv<=2?'Tu árbol quedó muy simple (subajuste).':'Tu árbol quedó demasiado enredado o no es el mejor (sobreajuste).'}
+  setBest('m3',st);
+  showResult({medal:st===3?'🏆':st===2?'🥈':'🌱',title,stars:`⭐ ${st} de 3`,text,h:'Tu árbol final',tree:treeSVG(clone(s.t)),
+    extra:`<b>Acierta ${Math.round(s.te*100)}% con gente nueva</b>Con la gente que ya conocía acierta ${Math.round(s.tr*100)}%. Si un árbol crece demasiado, esa cifra sube pero la de gente nueva baja: se llama <u>sobreajuste</u>. Si se queda muy corto, se llama <u>subajuste</u>. La poda sirve para evitar los dos extremos.`,
+    foot:[['🔁 Intentar otra vez','startLab()','soft'],['📘 Ver el repaso','go(\'recap\')','go']]});
+}
+
+/* ================= Resultado y repaso ================= */
+function showResult(o){
+  go('result');
+  $('medal').textContent=o.medal;$('resTitle').textContent=o.title;$('resStars').textContent=o.stars;$('resText').textContent=o.text;
+  $('resH').textContent=o.h;$('resTree').innerHTML=o.tree;$('resExtra').innerHTML=o.extra;
+  $('resFoot').innerHTML=o.foot.map(([t,f,k])=>`<button class="btn btn-${k}" onclick="${f}">${t}</button>`).join('');
+  tone([523,659,784,1047,1319],.11,'triangle');
+}
+function forestVote(){
+  const person=pickOne(TEST),trees=[];
+  for(let i=0;i<5;i++){const bs=Array.from({length:TRAIN.length},()=>pickOne(TRAIN));const vars=shuffle(VKEYS.slice()).slice(0,3);
+    trees.push(makeTree(bs,{maxDepth:3,minLeaf:5,cp:.003,vars}))}
+  const votes=trees.map(t=>walk(t,person).pred),tally=[0,0,0];votes.forEach(v=>tally[v]++);const win=major(tally);
+  $('forest').innerHTML=`<div class="chips" style="justify-content:center">${VKEYS.map(k=>`<span class="chip">${VICON[k]} ${VLABEL[k]}: ${person[k]}</span>`).join('')}</div>
+  <div class="votes">${votes.map((v,i)=>`<div class="vote" style="animation-delay:${i*.12}s">🌳 Árbol ${i+1}<b>${EMO[v]}</b>${CNAME[v]}</div>`).join('')}</div>
+  <p style="text-align:center;font-weight:800;color:var(--ink)">Gana por votos: ${EMO[win]} ${CNAME[win]} (${tally[win]} de 5). En la vida real eligió ${EMO[person.cls]} ${CNAME[person.cls]}.</p>`;
+  tone([523,659,784],.08,'triangle');
+}
+$('cmp').innerHTML=[['Árbol base (CART)',52],['Poco podado',46],['Muy grande',51],['Muy corto',46],['CHAID',46]].map(([n,v])=>`<div class="${v===52?'top':''}"><span>${n}</span><span class="cb"><i style="width:${v}%"></i></span><span>${v}</span></div>`).join('');
+$('solB').innerHTML=SOL;$('solP').innerHTML=SOL;$('solL').innerHTML=SOL;$('solR').innerHTML=SOL;$('homeSol').innerHTML=SOL;
+refreshStars();
+
+</script>
+</body>
+</html>
